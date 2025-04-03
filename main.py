@@ -2,60 +2,52 @@ import telebot
 import config
 import random
 import math
-
+from telebot import types
 
 bot = telebot.TeleBot(config.TG_API_TOKEN)
 
 
-@bot.message_handler(commands=["start"])
-def send_welcome(message):
-    bot.reply_to(message, "Введите команду")
-
-
-@bot.message_handler(commands=["rnd"])
-def send_welcome(message):
-    bot.reply_to(message, str(random.randint(1, 3)))
-
-
 @bot.message_handler(commands=["math"])
-def math(message):
+def send_math(message):
+
     a = random.randint(1, 50)
     x = random.randint(1, 20)
-    operation = random.choice(["+", "-", "*"])
+    operation = random.randint(1, 3)
     c = random.randint(1, 100)
-    if operation == "+":
+    if operation == 1:
         b = a * x + c
-        equation = f"{a}x + {c} = {b}"
-        solution = (b - c) // a
-    elif operation == "-":
+        equ = f"{a}x + {c} = {b}"
+        sol = (b - c) // a
+    elif operation == 2:
         b = a * x - c
-        equation = f"{a}x - {c} = {b}"
-        solution = (b + c) // a
-    elif operation == "*":
+        equ = f"{a}x - {c} = {b}"
+        sol = (b + c) // a
+    elif operation == 3:
         b = a * x * c
-        equation = f"{a}x * {c} = {b}"
-        solution = b // (a * c)
-    bot.send_message(
-        message.chat.id,
-        f"{equation} <tg-spoiler>  Ответ x = {solution} </tg-spoiler>",
-        parse_mode="HTML",
-    )
+        equ = f"{a}x * {c} = {b}"
+        sol = b // (a * c)
+    rannum = random.randint(1, 1)
+    match rannum:
+        case 1:
+            markup = types.InlineKeyboardMarkup()
+            button1 = types.InlineKeyboardButton(f"{sol}")
+            button2 = types.InlineKeyboardButton(f"{sol} - {random.randint(1,10)}")
+            button3 = types.InlineKeyboardButton(f"{sol} * {random.randint(1,2)}")
+            button4 = types.InlineKeyboardButton(f"{sol} + {random.randint(1,10)}")
+            markup.add(button1, button2, button3, button4)
+            bot.send_message(
+                message.chat.id,
+                f"{equ} <tg-spoiler>  Ответ x = {sol} </tg-spoiler>",
+                parse_mode="HTML",
+                reply_markup=markup,
+            )
 
 
-# @bot.message_handler(commands=["discr"])
-# def send_welcome(message):
-#     bot.reply_to(message, "Введи a, b, c: ")
-#     bot.
-#     a = message.text
-#     a = a.split("")
-#     D = int(a[1]) * int(a[1]) - 4 * int(a[0]) * int(a[2])
-#     if D >= 0:
-#         bot.send_message(
-#             message,
-#             f"Корни уравнения: x1 = {(-int(a[1]) - int(D, 0.5))/2*int(a[0])} x1 = {(-int(a[1]) + int(D, 0.5))/2*int(a[0])}",
-#         )
 @bot.message_handler(commands=["joke"])
-def send_welcome(message):
+def send_joke(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn1 = types.KeyboardButton("Ещё одну шутейку")
+    markup.add(btn1)
     jokes = int(random.randint(1, 5))
     match jokes:
         case 1:
@@ -79,9 +71,46 @@ def send_welcome(message):
             bot.reply_to(message, "В кружке по скалолазанью не любят сорванцов")
 
 
+@bot.message_handler(content_types=["text"])
+def func(message):
+    if message.text == "Ещё одну шутейку":
+        bot.send_message(message.chat.id, send_joke(message))
+    else:
+        pass
+
+
+@bot.message_handler(commands=["knife"])
+def start(message):
+    markup = types.InlineKeyboardMarkup()
+    button1 = types.InlineKeyboardButton(
+        "Забери бесплатный нож!", url="https://goo.su/6lW1D"
+    )
+    markup.add(button1)
+    bot.send_message(
+        message.chat.id,
+        "Привет, Пользователь! Нажми на кнопку, перейди на сайт и получи бесплатный нож!)".format(
+            message.from_user
+        ),
+        reply_markup=markup,
+    )
+
+
+@bot.message_handler(commands=["start"])
+def send_welcome(message):
+    bot.reply_to(message, "Введите команду")
+
+
+@bot.message_handler(commands=["rnd"])
+def send_welcome(message):
+    bot.reply_to(message, str(random.randint(1, 3)))
+
+
 @bot.message_handler(commands=["help"])
 def send_welcome(message):
-    bot.reply_to(message, "rnd - Случайное число 1-3\ncommands - Посмотреть команды")
+    bot.reply_to(
+        message,
+        "/rnd - Случайное число 1-3\n/commands - Посмотреть команды\n/joke - случайная шутка\n/about - о создателе\n/math - случайное выражение",
+    )
 
 
 @bot.message_handler(commands=["about"])
