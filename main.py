@@ -3,6 +3,7 @@ import config
 import random
 import math
 
+
 bot = telebot.TeleBot(config.TG_API_TOKEN)
 
 
@@ -17,36 +18,28 @@ def send_welcome(message):
 
 
 @bot.message_handler(commands=["math"])
-def send_welcome(message):
-    mathex = int(random.randint(1, 3))
-    match mathex:
-        case 1:
-            a = random.randint(1, 9)
-            b = random.randint(1, 9)
-            c = int(a + b)
-            bot.send_message(
-                message.chat.id,
-                f"x - {a} = {b} | x = ||{str(c)}||",
-                parse_mode="MarkdownV2",
-            )
-        case 2:
-            a = random.randint(1, 5)
-            b = random.randint(1, 10)
-            c = int(b - a)
-            bot.send_message(
-                message.chat.id,
-                f"x + {a} = {b} | x = ||{str(c)}||",
-                parse_mode="MarkdownV2",
-            )
-        case 3:
-            a = random.randint(1, 10)
-            b = random.randint(1, 10)
-            c = int(b * a)
-            bot.send_message(
-                message.chat.id,
-                f"x * {a} = {c} | x = ||{str(b)}||",
-                parse_mode="MarkdownV2",
-            )
+def math(message):
+    a = random.randint(1, 50)
+    x = random.randint(1, 20)
+    operation = random.choice(["+", "-", "*"])
+    c = random.randint(1, 100)
+    if operation == "+":
+        b = a * x + c
+        equation = f"{a}x + {c} = {b}"
+        solution = (b - c) // a
+    elif operation == "-":
+        b = a * x - c
+        equation = f"{a}x - {c} = {b}"
+        solution = (b + c) // a
+    elif operation == "*":
+        b = a * x * c
+        equation = f"{a}x * {c} = {b}"
+        solution = b // (a * c)
+    bot.send_message(
+        message.chat.id,
+        f"{equation} <tg-spoiler>  Ответ x = {solution} </tg-spoiler>",
+        parse_mode="HTML",
+    )
 
 
 # @bot.message_handler(commands=["discr"])
